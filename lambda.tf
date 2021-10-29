@@ -58,7 +58,42 @@ resource "aws_lambda_permission" "allow_cloudwatch_to_call_test_lambda" {
 resource "aws_kms_key" "config" {
   description = "env config"
   is_enabled = true
-  policy = "${file("iam/kms-policy.json")}"
+  policy = <<EOF
+  {
+    "Version" : "2012-10-17",
+    "Id" : "key-consolepolicy-3",
+    "Statement" : [ {
+      "Sid" : "Enable IAM User Permissions",
+      "Effect" : "Allow",
+      "Principal" : {
+        "AWS" : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      },
+      "Action" : "kms:*",
+      "Resource" : "*"
+    }, {
+      "Sid" : "Allow use of the key",
+      "Effect" : "Allow",
+      "Principal" : {
+        "AWS" : "${aws_iam_role.lambda_role.arn}"
+      },
+      "Action" : [ "kms:Encrypt", "kms:Decrypt", "kms:ReEncrypt*", "kms:GenerateDataKey*", "kms:DescribeKey" ],
+      "Resource" : "*"
+    }, {
+      "Sid" : "Allow attachment of persistent resources",
+      "Effect" : "Allow",
+      "Principal" : {
+        "AWS" : "${aws_iam_role.lambda_role.arn}"
+      },
+      "Action" : [ "kms:CreateGrant", "kms:ListGrants", "kms:RevokeGrant" ],
+      "Resource" : "*",
+      "Condition" : {
+        "Bool" : {
+          "kms:GrantIsForAWSResource" : "true"
+        }
+      }
+    } ]
+  }
+EOF
 }
 
 data "aws_kms_ciphertext" "client" {
