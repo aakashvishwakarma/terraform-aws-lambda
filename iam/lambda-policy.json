@@ -10,7 +10,7 @@
         {
             "Effect": "Allow",
             "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:*:251589962883:*"
+            "Resource": "arn:aws:logs:*:486614504337:*"
         },
         {
             "Effect": "Allow",
