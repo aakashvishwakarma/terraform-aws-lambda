@@ -32,7 +32,7 @@ jobs:
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
     - name: Setup Remote state
       run: |
-        chmod +x setup-remote-state.sh
+        chmod +x remote-state.sh
         ./remote-state.sh $BUCKET_NAME $DYNAMO_DB $REGION
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
