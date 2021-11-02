@@ -1,11 +1,7 @@
 name: 'Terraform Destroy'
 on:
   workflow_dispatch:
-    inputs:
-      infra_env:
-        description: 'Environment of infrastructure'
-        required: true
-        default: 'dev'
+    
 env:
   BUCKET_NAME: aws-vm-test-s3-tfstate
   DYNAMO_DB : aws-vm-test-s3-tfstatelock
@@ -16,7 +12,7 @@ defaults:
 
 jobs:  
   terraform:
-    name: 'destroy ceq web infra'
+    name: 'destroy  web infra'
     runs-on: ${{ matrix.os }}
     
     strategy:
