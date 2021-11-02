@@ -2,6 +2,11 @@ name: 'Terraform'
 
 on:
   workflow_dispatch:
+env:
+  ENV: dev
+  BUCKET_NAME: aws-vm-test-s3-tfstate
+  DYNAMO_DB : aws-vm-test-s3-tfstatelock
+  REGION : us-east-1
 
 jobs:
          
@@ -25,10 +30,16 @@ jobs:
       uses: hashicorp/setup-terraform@v1
       with:
         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+    - name: Setup Remote state
+      run: |
+        chmod +x setup-remote-state.sh
+        ./remote-state.sh $BUCKET_NAME $DYNAMO_DB $REGION
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      run: terraform init
+      run: terraform init -no-color -reconfigure -force-copy -backend-config="bucket=$BUCKET_NAME" -backend-config="key=${{ env.TF_VAR_STATE_FILE }}" -backend-config="dynamodb_table=$DYNAMO_DB" -backend-config="encrypt=true"
+      env:
+        TF_VAR_STATE_FILE: "$ENV-${{ github.event.repository.name }}.tfstate" 
 
     # Checks that all Terraform configuration files adhere to a canonical format
     #- name: Terraform Format
@@ -41,13 +52,13 @@ jobs:
        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
        # aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} # if you have/need it
-       aws-region: us-east-1
+       aws-region: ${{ env.REGION }} 
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -var="client=${{secrets.LAMBDA_SECRETS}}"
+      run: terraform plan -var="client='${{secrets.LAMBDA_SECRETS}}'" -input=false -lock=false
 
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
-      run: terraform apply -auto-approve -var="client=${{secrets.LAMBDA_SECRETS}}" 
+      run: terraform apply -auto-approve -var="client='${{secrets.LAMBDA_SECRETS}}'" -input=false -lock=false 
