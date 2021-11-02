@@ -44,4 +44,4 @@ jobs:
         TF_VAR_STATE_FILE: "${{ github.event.inputs.infra_env }}-${{ github.event.repository.name }}.tfstate"  
 
     - name: Terraform Destroy   
-      run: terraform destroy -auto-approve -input=false
+      run: terraform destroy -auto-approve -var="client='${{secrets.LAMBDA_SECRETS}}'" -input=false
