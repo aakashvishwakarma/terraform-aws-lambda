@@ -1,0 +1,51 @@
+name: 'Terraform Destroy'
+on:
+  workflow_dispatch:
+    inputs:
+      infra_env:
+        description: 'Environment of infrastructure'
+        required: true
+        default: 'dev'
+env:
+  BUCKET_NAME: aws-vm-test-s3-tfstate
+  DYNAMO_DB : aws-vm-test-s3-tfstatelock
+
+defaults:
+  run:
+    shell: bash
+
+jobs:  
+  terraform:
+    name: 'destroy ceq web infra'
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    - name: Configure AWS credentials from Test account
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    # - name: Git global configure
+    #   run:  git config --global url."https://oauth2:${{secrets.PAT_TOKEN}}@github.com".insteadOf https://github.com
+
+    - name: Terraform Init
+      run: terraform init -no-color -reconfigure -force-copy -backend-config="bucket=$BUCKET_NAME" -backend-config="key=${{ env.TF_VAR_STATE_FILE }}" -backend-config="dynamodb_table=$DYNAMO_DB" -backend-config="encrypt=true"
+      env:
+        TF_VAR_STATE_FILE: "${{ github.event.inputs.infra_env }}-${{ github.event.repository.name }}.tfstate"  
+
+    - name: Terraform Destroy   
+      run: terraform destroy -auto-approve -var-file="client='${{secrets.LAMBDA_SECRETS}}'" -input=false
