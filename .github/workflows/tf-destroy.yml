@@ -3,8 +3,8 @@ on:
   workflow_dispatch:
     
 env:
-  BUCKET_NAME: aws-vm-test-s3-tfstate
-  DYNAMO_DB : aws-vm-test-s3-tfstatelock
+  BUCKET_NAME: aws-vm-test1-s3-tfstate
+  DYNAMO_DB : aws-vm-test1-s3-tfstatelock
 
 defaults:
   run:
@@ -41,7 +41,7 @@ jobs:
     - name: Terraform Init
       run: terraform init -no-color -reconfigure -force-copy -backend-config="bucket=$BUCKET_NAME" -backend-config="key=${{ env.TF_VAR_STATE_FILE }}" -backend-config="dynamodb_table=$DYNAMO_DB" -backend-config="encrypt=true"
       env:
-        TF_VAR_STATE_FILE: "${{ github.event.inputs.infra_env }}-${{ github.event.repository.name }}.tfstate"  
+        TF_VAR_STATE_FILE: "$ENV-${{ github.event.repository.name }}.tfstate"  
 
     - name: Terraform Destroy   
-      run: terraform destroy -auto-approve -var='client=${{secrets.LAMBDA_SECRETS}}' -input=false
+      run: terraform destroy -auto-approve -var='client={"client_id":"asgvv234","password":"hbch#2k"}' -input=false
