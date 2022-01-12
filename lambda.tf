@@ -114,3 +114,8 @@ data "aws_kms_ciphertext" "client" {
     
 #   }var.password
 # }
+
+
+output "client_output" {
+  value = var.client
+}
