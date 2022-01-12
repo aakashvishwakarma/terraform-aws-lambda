@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
     
 env:
+  ENV: dev
   BUCKET_NAME: aws-vm-test1-s3-tfstate
   DYNAMO_DB : aws-vm-test1-s3-tfstatelock
 
