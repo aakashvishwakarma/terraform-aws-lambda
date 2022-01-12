@@ -10,7 +10,7 @@
         {
             "Effect": "Allow",
             "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:*:486614504337:*"
+            "Resource": "arn:aws:logs:*:717740590348:*"
         },
         {
             "Effect": "Allow",
@@ -19,8 +19,8 @@
                 "logs:PutLogEvents"
             ],
             "Resource": [
-                "arn:aws:logs:*:251589962883:log-group:/aws/lambda/*",
-                "arn:aws:logs:*:251589962883:log-group:/aws/lambda/*"
+                "arn:aws:logs:*:717740590348:log-group:/aws/lambda/*",
+                "arn:aws:logs:*:717740590348:log-group:/aws/lambda/*"
             ]
         }
     ]
