@@ -76,7 +76,8 @@ resource "aws_kms_key" "config" {
       "Principal" : {
         "AWS" : "${aws_iam_role.lambda_role.arn}"
       },
-      "Action" : [ "kms:Encrypt", "kms:Decrypt", "kms:ReEncrypt*", "kms:GenerateDataKey*", "kms:DescribeKey" ],
+#       "Action" : [ "kms:Encrypt", "kms:Decrypt", "kms:ReEncrypt*", "kms:GenerateDataKey*", "kms:DescribeKey" ],
+        "Action" : [ "kms:Decrypt","kms:DescribeKey" ],
       "Resource" : "*"
     }, {
       "Sid" : "Allow attachment of persistent resources",
