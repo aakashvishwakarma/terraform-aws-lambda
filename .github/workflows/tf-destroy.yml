@@ -14,7 +14,8 @@ defaults:
 jobs:  
   terraform:
     name: 'destroy  web infra'
-    runs-on: ${{ matrix.os }}
+#     runs-on: ${{ matrix.os }}
+    runs-on: self-hosted
     
     strategy:
       fail-fast: false
